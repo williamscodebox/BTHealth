@@ -204,10 +204,15 @@ function useBLE(): BluetoothLowEnergyApi {
         Number(rawData[1].charCodeAt(0) << 8) +
         Number(rawData[2].charCodeAt(2));
     }
-
-    setHeartRate(buffer[10]);
-    setSystolic(buffer[6]);
-    setDiastolic(buffer[8]);
+    if (buffer.length > 9) {
+      setHeartRate(buffer[10]);
+      setSystolic(buffer[6]);
+      setDiastolic(buffer[8]);
+    } else {
+      setHeartRate(0);
+      setSystolic(0);
+      setDiastolic(0);
+    }
   };
 
   const startStreamingData = async (device: Device) => {
