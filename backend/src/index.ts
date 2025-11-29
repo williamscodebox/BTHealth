@@ -2,6 +2,7 @@ import express from "express";
 import type { Request, Response } from "express"; // 👈 use `type` keyword
 import "dotenv/config";
 import cors from "cors";
+import authRoutes from "./routes/authRoutes";
 
 import { connectDB } from "./lib/db";
 
@@ -14,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 //job.start();
 app.use(cors());
 
-//app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 //app.use("/api/books", bookRoutes);
 
 // 👇 Define a root route
