@@ -20,7 +20,7 @@ app.use("/api/auth", authRoutes);
 
 // 👇 Define a root route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to Bookworm Backend!");
+  res.send("Welcome to BT Health Backend!");
 });
 
 app.listen(PORT, () => {
