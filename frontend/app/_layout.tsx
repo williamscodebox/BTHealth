@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 
 import { useAuthStore } from "../store/authStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,13 +14,17 @@ export default function RootLayout() {
   const segments = useSegments();
 
   const { checkAuth, user, token } = useAuthStore();
+  const [layoutReady, setLayoutReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
     "JetBrainsMono-Medium": require("../assets/fonts/JetBrainsMono-Medium.ttf"),
   });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+      setLayoutReady(true);
+    }
   }, [fontsLoaded]);
 
   useEffect(() => {
@@ -29,6 +33,8 @@ export default function RootLayout() {
 
   // handle navigation based on the auth state
   useEffect(() => {
+    if (!layoutReady) return;
+
     const inAuthScreen = segments[0] === "(auth)";
     const isSignedIn = user && token;
 
