@@ -54,10 +54,10 @@ const createBPStat = async (req: AuthRequest, res: Response) => {
 
     // save to the database
     const newBPStat = new BPStat({
-      systolic,
-      diastolic,
-      heartRate,
-      category,
+      Systolic: systolic,
+      Diastolic: diastolic,
+      HeartRate: heartRate,
+      Category: category,
       user: req.user?._id,
     });
 
