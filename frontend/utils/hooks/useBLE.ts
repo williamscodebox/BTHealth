@@ -126,7 +126,14 @@ function useBLE(): BluetoothLowEnergyApi {
 
   const connectToDevice = async (device: Device) => {
     try {
-      const deviceConnection = await bleManager.connectToDevice(device.id);
+      bleManager.stopDeviceScan();
+
+      const deviceConnection = await bleManager.connectToDevice(device.id, {
+        autoConnect: true,
+      });
+      const isConnected = await deviceConnection.isConnected();
+      if (!isConnected) throw new Error("Device failed to connect");
+
       setConnectedDevice(deviceConnection);
 
       // Discover services and characteristics
@@ -145,24 +152,36 @@ function useBLE(): BluetoothLowEnergyApi {
         );
       }
 
-      bleManager.stopDeviceScan();
-
+      // ✅ Pass correct UUIDs into your streaming function
       // Once you know the correct UUIDs, then start streaming
       startStreamingData(deviceConnection);
+
       console.log("CONNECTED TO DEVICE:", deviceConnection);
     } catch (e) {
       console.log("FAILED TO CONNECT", e);
     }
   };
 
-  const disconnectFromDevice = () => {
+  const disconnectFromDevice = async () => {
     if (connectedDevice) {
       // Remove subscription first
       subscriptionRef.current?.remove();
       subscriptionRef.current = null;
 
-      bleManager.cancelDeviceConnection(connectedDevice.id);
+      const isConnected = await bleManager.isDeviceConnected(
+        connectedDevice.id
+      );
+
+      if (isConnected) {
+        try {
+          await bleManager.cancelDeviceConnection(connectedDevice.id);
+        } catch (error) {
+          console.warn("Error disconnecting:", error);
+        }
+      }
       setConnectedDevice(null);
+      setSystolic(0);
+      setDiastolic(0);
       setHeartRate(0);
     }
   };
