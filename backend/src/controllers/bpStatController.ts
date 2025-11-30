@@ -19,13 +19,45 @@ const createBPStat = async (req: AuthRequest, res: Response) => {
     // calculate category
 
     // create the logic to determine the category based on systolic and diastolic values here
+    // low risk sys < 90 or dia < 60
+    // normal sys <120 and dia <80
+    //elevated sys 120-129 and dia < 80
+    //stage 1 sys 130-139 or dia 80-89
+    //stage 2 sys >=140 or dia >=90
+    //hypertensive crisis sys >180 and/or dia >120
+
+    function calculateCategory(systolic: number, diastolic: number): string {
+      if (systolic > 180 || diastolic > 120) {
+        return "Hypertensive Crisis";
+      }
+      if (systolic >= 140 || diastolic >= 90) {
+        return "Stage 2 Hypertension";
+      }
+      if (
+        (systolic >= 130 && systolic <= 139) ||
+        (diastolic >= 80 && diastolic <= 89)
+      ) {
+        return "Stage 1 Hypertension";
+      }
+      if (systolic >= 120 && systolic <= 129 && diastolic < 80) {
+        return "Elevated";
+      }
+      if (systolic < 120 && diastolic < 80) {
+        return "Normal";
+      }
+      if (systolic < 90 || diastolic < 60) {
+        return "Low";
+      }
+      return "Uncategorized";
+    }
+    const category = calculateCategory(systolic, diastolic);
 
     // save to the database
     const newBPStat = new BPStat({
       systolic,
       diastolic,
       heartRate,
-      // category,
+      category,
       user: req.user?._id,
     });
 
