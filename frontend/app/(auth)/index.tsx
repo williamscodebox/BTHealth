@@ -28,7 +28,7 @@ export default function Login() {
     if (!result.success) Alert.alert("Error", result.error);
   };
 
-  //if (isCheckingAuth) return null;
+  if (isCheckingAuth) return null;
 
   return (
     <KeyboardAvoidingView
