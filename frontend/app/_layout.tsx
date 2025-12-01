@@ -3,9 +3,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import SafeScreen from "../components/SafeScreen";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
-
-import { useAuthStore } from "../store/authStore";
 import { useEffect, useState } from "react";
+import { useAppStore } from "@/store/Store";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -13,7 +12,7 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
 
-  const { checkAuth, user, token } = useAuthStore();
+  const { checkAuth, user, token } = useAppStore();
   const [layoutReady, setLayoutReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
