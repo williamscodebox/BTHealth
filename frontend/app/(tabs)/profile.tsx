@@ -122,22 +122,6 @@ export default function Profile() {
     </View>
   );
 
-  const renderRatingStars = (rating: number) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Ionicons
-          key={i}
-          name={i <= rating ? "star" : "star-outline"}
-          size={14}
-          color={i <= rating ? "#f4b400" : COLORS.textSecondary}
-          style={{ marginRight: 2 }}
-        />
-      );
-    }
-    return stars;
-  };
-
   const handleRefresh = async () => {
     setRefreshing(true);
     await sleep(500);
