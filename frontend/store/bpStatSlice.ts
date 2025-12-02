@@ -1,27 +1,6 @@
 import { StateCreator } from "zustand";
 import { API_URL } from "../constants/api";
-import { AppState, BPStatState } from "@/utils/types/types";
-
-type CategoryType =
-  | "Uncategorized"
-  | "Low"
-  | "Normal"
-  | "Elevated"
-  | "Stage 1 Hypertension "
-  | "Stage 2 Hypertension"
-  | "Hypertensive Crisis";
-
-type BPStat = {
-  id: string;
-  systolic: Number;
-  diastolic: Number;
-  heartRate: Number;
-  category: CategoryType;
-  user: string;
-  createdAt: string;
-  updatedAt: string;
-  // add other fields returned by your API
-};
+import { AppState, BPStat, BPStatState } from "@/utils/types/types";
 
 type AuthResponse = {
   bpStat: BPStat;

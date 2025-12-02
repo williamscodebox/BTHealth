@@ -18,34 +18,15 @@ import COLORS from "../../constants/colors";
 import { Image } from "expo-image";
 import { sleep } from ".";
 import { useAppStore } from "@/store/Store";
+import { BPStat } from "@/utils/types/types";
 //import Loader from "../../components/Loader";
-
-type Book = {
-  _id: string; // MongoDB document ID
-  title: string; // Book title
-  caption: string; // Short description or notes
-  image: string; // URL or base64 data URI
-  rating: number; // 1–5 rating
-  user: string; // User ID (ObjectId as string)
-  createdAt: string; // Auto-added by timestamps
-  updatedAt: string; // Auto-added by timestamps
-};
-
-type BookItem = {
-  _id: string;
-  title: string;
-  caption: string;
-  rating: number;
-  createdAt: string;
-  image: { uri: string } | string;
-  user: { username: string; profileImage: string };
-};
+//
 
 export default function Profile() {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [bpStats, setBPStats] = useState<BPStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [deleteBookId, setDeleteBookId] = useState<string | null>(null);
+  const [deleteBPStatId, setDeleteBPStatId] = useState<string | null>(null);
 
   const { token } = useAppStore();
 
@@ -55,7 +36,7 @@ export default function Profile() {
     try {
       setIsLoading(true);
 
-      const response = await fetch(`${API_URL}/books/user`, {
+      const response = await fetch(`${API_URL}/bpStat/t5stats`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -63,7 +44,7 @@ export default function Profile() {
       if (!response.ok)
         throw new Error(data.message || "Failed to fetch user books");
 
-      setBooks(data);
+      setBPStats(data);
     } catch (error) {
       console.error("Error fetching data:", error);
       Alert.alert(
@@ -79,11 +60,11 @@ export default function Profile() {
     fetchData();
   }, []);
 
-  const handleDeleteBook = async (bookId: string) => {
+  const handleDeleteBPStat = async (bpStatId: string) => {
     try {
-      setDeleteBookId(bookId);
+      setDeleteBPStatId(bpStatId);
 
-      const response = await fetch(`${API_URL}/books/${bookId}`, {
+      const response = await fetch(`${API_URL}/bpStat/${bpStatId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -92,41 +73,37 @@ export default function Profile() {
       if (!response.ok)
         throw new Error(data.message || "Failed to delete book");
 
-      setBooks(books.filter((book) => book._id !== bookId));
-      Alert.alert("Success", "Recommendation deleted successfully");
+      setBPStats(bpStats.filter((bpStat) => bpStat._id !== bpStatId));
+      Alert.alert("Success", "Blood pressure record deleted successfully");
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to delete recommendation");
+      Alert.alert("Error", error.message || "Failed to delete record");
     } finally {
-      setDeleteBookId(null);
+      setDeleteBPStatId(null);
     }
   };
 
-  const confirmDelete = (bookId: string) => {
+  const confirmDelete = (bpStatId: string) => {
     Alert.alert(
-      "Delete Recommendation",
-      "Are you sure you want to delete this recommendation?",
+      "Delete Blood Pressure Record",
+      "Are you sure you want to delete this record?",
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => handleDeleteBook(bookId),
+          onPress: () => handleDeleteBPStat(bpStatId),
         },
       ]
     );
   };
 
-  const renderBookItem = ({ item }: { item: Book }) => (
+  const renderBookItem = ({ item }: { item: BPStat }) => (
     <View style={styles.bookItem}>
-      <Image source={item.image} style={styles.bookImage} />
       <View style={styles.bookInfo}>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-        <View style={styles.ratingContainer}>
-          {renderRatingStars(item.rating)}
-        </View>
-        <Text style={styles.bookCaption} numberOfLines={2}>
-          {item.caption}
-        </Text>
+        <Text style={styles.bookTitle}>{item.systolic.toString()}</Text>
+        <Text style={styles.bookTitle}>{item.diastolic.toString()}</Text>
+        <Text style={styles.bookTitle}>{item.heartRate.toString()}</Text>
+        <Text style={styles.bookTitle}>{item.category}</Text>
         <Text style={styles.bookDate}>
           {new Date(item.createdAt).toLocaleDateString()}
         </Text>
@@ -136,7 +113,7 @@ export default function Profile() {
         style={styles.deleteButton}
         onPress={() => confirmDelete(item._id)}
       >
-        {deleteBookId === item._id ? (
+        {deleteBPStatId === item._id ? (
           <ActivityIndicator size="small" color={COLORS.primary} />
         ) : (
           <Ionicons name="trash-outline" size={20} color={COLORS.primary} />

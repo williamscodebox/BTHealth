@@ -12,6 +12,27 @@ export type User = {
 
 type AuthResult = { success: boolean; error?: string };
 
+type CategoryType =
+  | "Uncategorized"
+  | "Low"
+  | "Normal"
+  | "Elevated"
+  | "Stage 1 Hypertension "
+  | "Stage 2 Hypertension"
+  | "Hypertensive Crisis";
+
+export type BPStat = {
+  _id: string;
+  systolic: Number;
+  diastolic: Number;
+  heartRate: Number;
+  category: CategoryType;
+  user: string;
+  createdAt: string;
+  updatedAt: string;
+  // add other fields returned by your API
+};
+
 export type BPStatState = {
   createBp: (
     systolic: Number,
