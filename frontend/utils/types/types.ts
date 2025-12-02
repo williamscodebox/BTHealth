@@ -23,10 +23,10 @@ type CategoryType =
 
 export type BPStat = {
   _id: string;
-  systolic: Number;
-  diastolic: Number;
-  heartRate: Number;
-  category: CategoryType;
+  Systolic: Number;
+  Diastolic: Number;
+  HeartRate: Number;
+  Category: CategoryType;
   user: string;
   createdAt: string;
   updatedAt: string;

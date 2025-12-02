@@ -15,7 +15,6 @@ import ProfileHeader from "../../components/ProfileHeader";
 import LogoutButton from "../../components/LogoutButton";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
-import { Image } from "expo-image";
 import { sleep } from ".";
 import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
@@ -44,7 +43,7 @@ export default function Profile() {
       if (!response.ok)
         throw new Error(data.message || "Failed to fetch user books");
 
-      setBPStats(data);
+      setBPStats(data.bpStats);
     } catch (error) {
       console.error("Error fetching data:", error);
       Alert.alert(
@@ -53,6 +52,7 @@ export default function Profile() {
       );
     } finally {
       setIsLoading(false);
+      console.log(bpStats);
     }
   };
 
@@ -100,12 +100,12 @@ export default function Profile() {
   const renderBPItem = ({ item }: { item: BPStat }) => (
     <View style={styles.bookItem}>
       <View style={styles.bookInfo}>
-        <Text style={styles.bookTitle}>{item.systolic.toString()}</Text>
-        <Text style={styles.bookTitle}>{item.diastolic.toString()}</Text>
-        <Text style={styles.bookTitle}>{item.heartRate.toString()}</Text>
-        <Text style={styles.bookTitle}>{item.category}</Text>
+        <Text style={styles.bookTitle}>{item.Systolic?.toString() ?? ""}</Text>
+        <Text style={styles.bookTitle}>{item.Diastolic?.toString() ?? ""}</Text>
+        <Text style={styles.bookTitle}>{item.HeartRate?.toString() ?? ""}</Text>
+        <Text style={styles.bookTitle}>{item.Category ?? ""}</Text>
         <Text style={styles.bookDate}>
-          {new Date(item.createdAt).toLocaleDateString()}
+          {new Date(item.createdAt)?.toLocaleDateString() ?? ""}
         </Text>
       </View>
 
@@ -127,6 +127,7 @@ export default function Profile() {
     await sleep(500);
     await fetchData();
     setRefreshing(false);
+    console.log(bpStats);
   };
 
   if (isLoading && !refreshing) return <Loader />;
