@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../constants/api";
+import { AppState } from "./Store";
 
 type User = {
   id: string;
@@ -44,7 +45,9 @@ const STORAGE_KEYS = {
   token: "auth_token",
 };
 
-export const createAuthSlice: StateCreator<AuthState> = (set) => ({
+export const createAuthSlice: StateCreator<AppState, [], [], AuthState> = (
+  set
+) => ({
   user: null,
   token: null,
   isLoading: false,

@@ -10,6 +10,7 @@ import {
 } from "react-native-ble-plx";
 import * as ExpoDevice from "expo-device";
 import base64 from "react-native-base64";
+import { useAppStore } from "@/store/Store";
 
 // Replace with your device’s service/characteristic UUIDs
 const CUSTOM_SERVICE_UUID = "000018f0-0000-1000-8000-00805f9b34fb";
@@ -35,6 +36,23 @@ function useBLE(): BluetoothLowEnergyApi {
   const [heartRate, setHeartRate] = useState<number>(0);
   const [systolic, setSystolic] = useState<number>(0);
   const [diastolic, setDiastolic] = useState<number>(0);
+
+  const { createBp } = useAppStore();
+
+  const handleBPStatUpdate = async (
+    systolic: number,
+    diastolic: number,
+    heartRate: number
+  ) => {
+    try {
+      const result = await createBp(systolic, diastolic, heartRate);
+      if (!result.success) {
+        console.log("Error creating BP Stat:", result.error);
+      }
+    } catch (error) {
+      console.log("Error creating BP Stat:", error);
+    }
+  };
 
   useEffect(() => {
     return () => {
@@ -222,6 +240,7 @@ function useBLE(): BluetoothLowEnergyApi {
       setHeartRate(buffer[10]);
       setSystolic(buffer[6]);
       setDiastolic(buffer[8]);
+      handleBPStatUpdate(buffer[6], buffer[8], buffer[10]);
     } else {
       setHeartRate(0);
       setSystolic(0);

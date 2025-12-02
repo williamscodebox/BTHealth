@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand";
 import { API_URL } from "../constants/api";
+import { AppState } from "./Store";
 
 type CategoryType =
   | "Uncategorized"
@@ -42,7 +43,9 @@ const STORAGE_KEYS = {
   token: "auth_token",
 };
 
-export const createAuthSlice: StateCreator<BPStatState> = (set) => ({
+export const createBPStatSlice: StateCreator<AppState, [], [], BPStatState> = (
+  set
+) => ({
   createBp: async (systolic, diastolic, heartRate) => {
     //set({ isLoading: true, error: null });
     try {
