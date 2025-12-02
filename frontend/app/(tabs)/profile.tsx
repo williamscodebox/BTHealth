@@ -6,7 +6,7 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text>Profile</Text>
+        <Text>Profile</Text>1
       </View>
     </SafeAreaView>
   );
