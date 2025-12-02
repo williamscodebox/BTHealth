@@ -70,34 +70,34 @@ const createBPStat = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// // pagination => infinite loading
-// const getBooks = async (req: Request, res: Response) => {
-//   // example call from react native - frontend
-//   // const response = await fetch("http://localhost:3000/api/books?page=1&limit=5");
-//   try {
-//     const page = Number(req.query.page) || 1;
-//     const limit = Number(req.query.limit) || 2;
-//     const skip = (page - 1) * limit;
+// pagination => infinite loading
+const getBPStats = async (req: Request, res: Response) => {
+  // example call from react native - frontend
+  // const response = await fetch("http://localhost:3000/api/books?page=1&limit=5");
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 2;
+    const skip = (page - 1) * limit;
 
-//     const books = await Book.find()
-//       .sort({ createdAt: -1 }) // desc
-//       .skip(skip)
-//       .limit(limit)
-//       .populate("user", "username profileImage");
+    const bpStats = await BPStat.find()
+      .sort({ createdAt: -1 }) // desc
+      .skip(skip)
+      .limit(limit)
+      .populate("user", "username profileImage");
 
-//     const totalBooks = await Book.countDocuments();
+    const totalBPStats = await BPStat.countDocuments();
 
-//     res.send({
-//       books,
-//       currentPage: page,
-//       totalBooks,
-//       totalPages: Math.ceil(totalBooks / limit),
-//     });
-//   } catch (error) {
-//     console.log("Error in get all books route", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
+    res.send({
+      bpStats,
+      currentPage: page,
+      totalBPStats,
+      totalPages: Math.ceil(totalBPStats / limit),
+    });
+  } catch (error) {
+    console.log("Error in get all bpStats route", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 // const deleteBook = async (req: AuthRequest, res: Response) => {
 //   try {
@@ -130,4 +130,4 @@ const createBPStat = async (req: AuthRequest, res: Response) => {
 //   }
 // };
 
-export { createBPStat };
+export { createBPStat, getBPStats };

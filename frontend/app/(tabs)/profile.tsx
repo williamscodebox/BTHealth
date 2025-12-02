@@ -35,7 +35,8 @@ export default function Profile() {
     try {
       setIsLoading(true);
 
-      const response = await fetch(`${API_URL}/bpStat/t5stats`, {
+      const response = await fetch(`${API_URL}/bpStat/getStats`, {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
 
