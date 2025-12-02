@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { API_URL } from "../constants/api";
-import { AppState } from "./Store";
+import { AppState, BPStatState } from "@/utils/types/types";
 
 type CategoryType =
   | "Uncategorized"
@@ -23,36 +23,25 @@ type BPStat = {
   // add other fields returned by your API
 };
 
-type AuthResult = { success: boolean; error?: string };
-
-export type BPStatState = {
-  createBp: (
-    systolic: Number,
-    diastolic: Number,
-    heartRate: Number
-  ) => Promise<AuthResult>;
-};
-
 type AuthResponse = {
   bpStat: BPStat;
   message?: string;
 };
 
-const STORAGE_KEYS = {
-  user: "auth_user",
-  token: "auth_token",
-};
-
 export const createBPStatSlice: StateCreator<AppState, [], [], BPStatState> = (
-  set
+  set,
+  get
 ) => ({
   createBp: async (systolic, diastolic, heartRate) => {
+    const token = get().token;
+
     //set({ isLoading: true, error: null });
     try {
       const response = await fetch(`${API_URL}/bpStat/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ include token
         },
         body: JSON.stringify({
           systolic,

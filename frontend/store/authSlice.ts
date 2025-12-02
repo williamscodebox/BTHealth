@@ -1,38 +1,9 @@
 import { StateCreator } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../constants/api";
-import { AppState } from "./Store";
-
-type User = {
-  id: string;
-  username: string;
-  email: string;
-  profileImage: string;
-  createdAt: string;
-  updatedAt: string;
-  // add other fields returned by your API
-};
+import { AppState, AuthState, User } from "@/utils/types/types";
 
 type AuthResult = { success: boolean; error?: string };
-
-export type AuthState = {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-  isCheckingAuth: boolean;
-  error: string | null;
-
-  register: (
-    username: string,
-    email: string,
-    password: string
-  ) => Promise<AuthResult>;
-
-  login: (email: string, password: string) => Promise<AuthResult>;
-
-  checkAuth: () => Promise<void>;
-  logout: () => Promise<void>;
-};
 
 type AuthResponse = {
   user: User;

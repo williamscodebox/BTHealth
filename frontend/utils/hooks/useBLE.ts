@@ -257,15 +257,14 @@ function useBLE(): BluetoothLowEnergyApi {
       subscriptionRef.current = device.monitorCharacteristicForService(
         CUSTOM_SERVICE_UUID,
         CUSTOM_CHARACTERISTIC_UUID,
-        (error, characteristic) => {
-          if (error) {
-            console.log("Monitor error:", error.reason || error.message);
-            return;
-          }
-          // handle characteristic.value
+        // (error, characteristic) => {
+        //   if (error) {
+        //     console.log("Monitor error:", error.reason || error.message);
+        //     return;
+        //   }
+        //   // handle characteristic.value
 
-          onHeartRateUpdate;
-        }
+        onHeartRateUpdate
       );
 
       // Keep subscription so you can remove it later
