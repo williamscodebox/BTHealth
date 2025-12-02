@@ -11,16 +11,15 @@ import {
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
 import styles from "../../assets/styles/profile.styles";
-//import ProfileHeader from "../../components/ProfileHeader";
-//import LogoutButton from "../../components/LogoutButton";
+import ProfileHeader from "../../components/ProfileHeader";
+import LogoutButton from "../../components/LogoutButton";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { Image } from "expo-image";
 import { sleep } from ".";
 import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
-//import Loader from "../../components/Loader";
-//
+import Loader from "../../components/Loader";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
@@ -97,7 +96,7 @@ export default function Profile() {
     );
   };
 
-  const renderBookItem = ({ item }: { item: BPStat }) => (
+  const renderBPItem = ({ item }: { item: BPStat }) => (
     <View style={styles.bookItem}>
       <View style={styles.bookInfo}>
         <Text style={styles.bookTitle}>{item.systolic.toString()}</Text>
@@ -129,22 +128,22 @@ export default function Profile() {
     setRefreshing(false);
   };
 
-  // if (isLoading && !refreshing) return <Loader />;
+  if (isLoading && !refreshing) return <Loader />;
 
   return (
     <View style={styles.container}>
-      {/* <ProfileHeader />
-      <LogoutButton /> */}
+      <ProfileHeader />
+      <LogoutButton />
 
       {/* YOUR RECOMMENDATIONS */}
       <View style={styles.booksHeader}>
-        <Text style={styles.booksTitle}>Your Recommendations 📚</Text>
-        <Text style={styles.booksCount}>{books.length} books</Text>
+        <Text style={styles.booksTitle}>Your blood pressure stats 📚</Text>
+        <Text style={styles.booksCount}>{bpStats.length} records</Text>
       </View>
 
       <FlatList
-        data={books}
-        renderItem={renderBookItem}
+        data={bpStats}
+        renderItem={renderBPItem}
         keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.booksList}
@@ -163,12 +162,14 @@ export default function Profile() {
               size={50}
               color={COLORS.textSecondary}
             />
-            <Text style={styles.emptyText}>No recommendations yet</Text>
+            <Text style={styles.emptyText}>No records yet</Text>
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => router.push({ pathname: "/(tabs)" })}
             >
-              <Text style={styles.addButtonText}>Add Your First Book</Text>
+              <Text style={styles.addButtonText}>
+                Add Your First Blood Pressure Reading
+              </Text>
             </TouchableOpacity>
           </View>
         }
