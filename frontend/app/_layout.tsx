@@ -11,7 +11,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
-  const { checkAuth, user, token } = useAppStore();
+  const { checkAuth, user, token, isCheckingAuth } = useAppStore();
   const [layoutReady, setLayoutReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
@@ -33,14 +33,18 @@ export default function RootLayout() {
 
   // handle navigation based on the auth state
   useEffect(() => {
-    if (!layoutReady) return;
+    if (!layoutReady || isCheckingAuth) return;
 
     const inAuthScreen = segments?.[0] === "(auth)";
     const isSignedIn = !!user && !!token;
 
     if (!isSignedIn && !inAuthScreen) router.replace("/(auth)");
     else if (isSignedIn && inAuthScreen) router.replace("/(tabs)");
-  }, [user, token, segments, layoutReady]);
+  }, [user, token, segments, layoutReady, isCheckingAuth]);
+
+  if (!layoutReady || isCheckingAuth) {
+    return null; // or a splash/loading component
+  }
 
   return (
     <SafeAreaProvider>
