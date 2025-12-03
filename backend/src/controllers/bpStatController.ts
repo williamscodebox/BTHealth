@@ -99,35 +99,22 @@ const getBPStats = async (req: Request, res: Response) => {
   }
 };
 
-// const deleteBook = async (req: AuthRequest, res: Response) => {
-//   try {
-//     const book = await Book.findById(req.params.id);
-//     if (!book) return res.status(404).json({ message: "Book not found" });
+const deleteBPStat = async (req: AuthRequest, res: Response) => {
+  try {
+    const bpstat = await BPStat.findById(req.params.id);
+    if (!bpstat) return res.status(404).json({ message: "BpStat not found" });
 
-//     // check if user is the creator of the book
-//     if (book.user.toString() !== req.user?._id.toString())
-//       return res.status(401).json({ message: "Unauthorized" });
+    // check if user is the creator of the bpStat
+    if (bpstat.user.toString() !== req.user?._id.toString())
+      return res.status(401).json({ message: "Unauthorized" });
 
-//     // https://res.cloudinary.com/de1rm4uto/image/upload/v1741568358/qyup61vejflxxw8igvi0.png
-//     // delete image from cloduinary as well
-//     if (book.image && book.image.includes("cloudinary")) {
-//       try {
-//         const publicId = book.image.split("/").pop()?.split(".")[0];
-//         if (publicId) {
-//           await cloudinary.uploader.destroy(publicId);
-//         }
-//       } catch (deleteError) {
-//         console.log("Error deleting image from cloudinary", deleteError);
-//       }
-//     }
+    await bpstat.deleteOne();
 
-//     await book.deleteOne();
+    res.json({ message: "BpStat deleted successfully" });
+  } catch (error: any) {
+    console.log("Error deleting bpStat", error);
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
 
-//     res.json({ message: "Book deleted successfully" });
-//   } catch (error: any) {
-//     console.log("Error deleting book", error);
-//     res.status(500).json({ message: error.message || "Internal server error" });
-//   }
-// };
-
-export { createBPStat, getBPStats };
+export { createBPStat, getBPStats, deleteBPStat };
