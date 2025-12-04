@@ -186,7 +186,7 @@ export default function Profile() {
       <ProfileHeader />
       <LogoutButton />
       <TouchableOpacity style={styles.addButton} onPress={createAndSharePDF}>
-        <Text style={styles.addButtonText}>Save as PDF</Text>
+        <Text style={styles.logoutText}>Save as PDF</Text>
       </TouchableOpacity>
 
       {/* YOUR RECOMMENDATIONS */}
