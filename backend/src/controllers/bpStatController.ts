@@ -71,7 +71,7 @@ const createBPStat = async (req: AuthRequest, res: Response) => {
 };
 
 // pagination => infinite loading
-const getBPStats = async (req: Request, res: Response) => {
+const getBPStats = async (req: Request, res: Response): Promise<void> => {
   // example call from react native - frontend
   // const response = await fetch("http://localhost:3000/api/books?page=1&limit=5");
   try {
@@ -98,7 +98,14 @@ const getBPStats = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("Error in get all bpStats route", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error:
+        process.env.NODE_ENV === "development"
+          ? (error as Error).message
+          : undefined,
+    });
   }
 };
 
