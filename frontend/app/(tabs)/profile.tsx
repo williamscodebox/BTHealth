@@ -20,9 +20,9 @@ import { sleep } from ".";
 import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
-import * as RNHTMLtoPDF from "react-native-html-to-pdf";
 import * as FileSystem from "expo-file-system";
-import { documentDirectory } from "expo-file-system";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
@@ -100,8 +100,11 @@ export default function Profile() {
     );
   };
 
-  const html = `
-<html>
+  const createAndSharePDF = async () => {
+    try {
+      // Step 1: Generate PDF from HTML
+      const { uri } = await Print.printToFileAsync({
+        html: `<html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
   </head>
@@ -128,32 +131,19 @@ export default function Profile() {
     </div>
   </body>
 </html>
-`;
-
-  const createPDF = async () => {
-    try {
-      const PDFOptions = {
-        html: html,
-        fileName: "file",
-        directory: Platform.OS === "android" ? "Downloads" : "Documents",
-      };
-      // Step 1: Generate PDF
-      const file = await RNHTMLtoPDF.convert(PDFOptions);
-
-      if (!file.filePath) return;
-      console.log("Generated PDF at:", file.filePath);
-
-      // Step 2: Copy into Expo's sandboxed storage
-      const destPath = FileSystem.documentDirectory + "report.pdf";
-      await FileSystem.moveAsync({
-        from: file.filePath, // source path
-        to: destPath,
+`,
       });
 
-      Alert.alert("PDF Ready", `Saved at: ${destPath}`);
-      alert(file.filePath);
-    } catch (error: any) {
-      console.log("Failed to generate pdf", error.message);
+      console.log("Generated PDF at:", uri);
+
+      // Step 2: Share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
+        console.log("Sharing not available on this device");
+      }
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
     }
   };
 
