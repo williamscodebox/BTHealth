@@ -22,8 +22,7 @@ import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
-// import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system/legacy";
+// import * as FileSystem from "expo-file-system/legacy";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
