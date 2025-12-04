@@ -21,7 +21,7 @@ import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
 import * as Print from "expo-print";
 // import * as Sharing from "expo-sharing";
-import * as FileSystem from "expo-file-system/legacy";
+import * as MediaLibrary from "expo-media-library";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
@@ -135,20 +135,22 @@ export default function Profile() {
 
       console.log("Generated PDF at:", uri);
 
-      // Save directly into documentDirectory
+      // Step 2: Request permission
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission denied");
+        return;
+      }
 
-      // Create a File object from the URI
-      const destPath = FileSystem.documentDirectory + "report.pdf";
+      // Step 3: Save into MediaLibrary (Downloads/Documents)
+      const asset = await MediaLibrary.createAssetAsync(uri);
 
-      await FileSystem.copyAsync({
-        from: uri,
-        to: destPath,
-      });
+      // Optional: put into a specific album (like "Download")
+      await MediaLibrary.createAlbumAsync("Download", asset, false);
 
-      console.log("PDF saved at:", destPath);
+      console.log("PDF saved into global storage:", asset.uri);
 
-      Alert.alert("PDF Ready", `Saved at: ${destPath}`);
-      alert(uri);
+      Alert.alert("PDF Ready", `Saved at: ${asset.uri}`);
 
       // // Step 3: Share the PDF
       // if (await Sharing.isAvailableAsync()) {
