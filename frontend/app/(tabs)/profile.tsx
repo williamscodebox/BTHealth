@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
@@ -20,8 +21,9 @@ import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
 import * as Print from "expo-print";
-// import * as Sharing from "expo-sharing";
-import * as MediaLibrary from "expo-media-library";
+import * as Sharing from "expo-sharing";
+// import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system/legacy";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
@@ -135,29 +137,50 @@ export default function Profile() {
 
       console.log("Generated PDF at:", uri);
 
-      // Step 2: Request permission
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission denied");
-        return;
-      }
-
-      // Step 3: Save into MediaLibrary (Downloads/Documents)
-      const asset = await MediaLibrary.createAssetAsync(uri);
-
-      // Optional: put into a specific album (like "Download")
-      await MediaLibrary.createAlbumAsync("Download", asset, false);
-
-      console.log("PDF saved into global storage:", asset.uri);
-
-      Alert.alert("PDF Ready", `Saved at: ${asset.uri}`);
-
-      // // Step 3: Share the PDF
-      // if (await Sharing.isAvailableAsync()) {
-      //   await Sharing.shareAsync(uri);
-      // } else {
-      //   console.log("Sharing not available on this device");
+      // if (Platform.OS === "ios") {
+      //   // 2) iOS: let the user choose a destination in Files/iCloud
+      //   if (await Sharing.isAvailableAsync()) {
+      //     await Sharing.shareAsync(uri);
+      //   }
+      //   return;
       // }
+
+      // // 3) Android: SAF — user picks a folder, you write the file there
+      // // Read the generated PDF as base64. If your SDK deprecates this, import from expo-file-system/legacy.
+      // const base64 = await FileSystem.readAsStringAsync(uri, {
+      //   encoding: "base64",
+      // });
+
+      // // Ask the user to pick a directory
+      // const permissions =
+      //   await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      // if (!permissions.granted || !permissions.directoryUri) {
+      //   throw new Error("User denied directory access.");
+      // }
+
+      // // Create a file in the chosen directory
+      // const contentUri =
+      //   await FileSystem.StorageAccessFramework.createFileAsync(
+      //     permissions.directoryUri,
+      //     "report.pdf",
+      //     "application/pdf"
+      //   );
+
+      // // Write the PDF into that file (SAF requires base64)
+      // await FileSystem.writeAsStringAsync(contentUri, base64, {
+      //   encoding: "base64",
+      // });
+
+      // console.log("PDF saved into global storage:", uri);
+
+      // Alert.alert("PDF has been saved");
+
+      //  Share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
+        console.log("Sharing not available on this device");
+      }
     } catch (error) {
       console.error("Failed to generate PDF:", error);
     }
@@ -202,8 +225,8 @@ export default function Profile() {
     <View style={styles.container}>
       <ProfileHeader />
       <LogoutButton />
-      <TouchableOpacity style={styles.addButton} onPress={createAndSharePDF}>
-        <Text style={styles.logoutText}>Save as PDF</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={createAndSharePDF}>
+        <Text style={styles.logoutText}>Share as PDF</Text>
       </TouchableOpacity>
 
       {/* YOUR RECOMMENDATIONS */}
