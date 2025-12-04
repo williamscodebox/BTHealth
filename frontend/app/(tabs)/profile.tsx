@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
@@ -19,13 +20,15 @@ import { sleep } from ".";
 import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
+import * as RNHTMLtoPDF from "react-native-html-to-pdf";
+import * as FileSystem from "expo-file-system";
+import { documentDirectory } from "expo-file-system";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [deleteBPStatId, setDeleteBPStatId] = useState<string | null>(null);
-
   const { token } = useAppStore();
 
   const router = useRouter();
@@ -97,6 +100,63 @@ export default function Profile() {
     );
   };
 
+  const html = `
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+  </head>
+  <body style="text-align: center;">
+    <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
+      Hello Expo!
+    </h1><div class="confirmationBox_content">
+        ${bpStats
+          .map(
+            (el) =>
+              `<div
+                  class="list"
+                  key=${el._id}
+
+                >
+                  <p class="key">${el.Systolic}</p>
+                  <p class="key">${el.Diastolic}</p>
+                  <p class="key">${el.HeartRate}</p>
+                  <p class="key">${el.Category}</p>
+                  <p class="key">${el.createdAt}</p>
+                </div>`
+          )
+          .join("")}
+    </div>
+  </body>
+</html>
+`;
+
+  const createPDF = async () => {
+    try {
+      const PDFOptions = {
+        html: html,
+        fileName: "file",
+        directory: Platform.OS === "android" ? "Downloads" : "Documents",
+      };
+      // Step 1: Generate PDF
+      const file = await RNHTMLtoPDF.convert(PDFOptions);
+
+      if (!file.filePath) return;
+      console.log("Generated PDF at:", file.filePath);
+
+      // Step 2: Copy into Expo's sandboxed storage
+      const destPath = FileSystem.documentDirectory + "report.pdf";
+      await FileSystem.moveAsync({
+        from: file.filePath, // source path
+        to: destPath,
+      });
+
+      Alert.alert("PDF Ready", `Saved at: ${destPath}`);
+      alert(file.filePath);
+    } catch (error: any) {
+      console.log("Failed to generate pdf", error.message);
+    }
+  };
+
   const renderBPItem = ({ item }: { item: BPStat }) => (
     <View style={styles.bookItem}>
       <View style={styles.bookInfo}>
@@ -136,6 +196,9 @@ export default function Profile() {
     <View style={styles.container}>
       <ProfileHeader />
       <LogoutButton />
+      <TouchableOpacity style={styles.addButton} onPress={createPDF}>
+        <Text style={styles.addButtonText}>Save as PDF</Text>
+      </TouchableOpacity>
 
       {/* YOUR RECOMMENDATIONS */}
       <View style={styles.booksHeader}>
