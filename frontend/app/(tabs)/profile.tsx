@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
-  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
@@ -21,7 +20,8 @@ import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
 import * as Print from "expo-print";
-import * as Sharing from "expo-sharing";
+// import * as Sharing from "expo-sharing";
+import * as FileSystem from "expo-file-system/legacy";
 
 export default function Profile() {
   const [bpStats, setBPStats] = useState<BPStat[]>([]);
@@ -135,12 +135,27 @@ export default function Profile() {
 
       console.log("Generated PDF at:", uri);
 
-      // Step 2: Share the PDF
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri);
-      } else {
-        console.log("Sharing not available on this device");
-      }
+      // Save directly into documentDirectory
+
+      // Create a File object from the URI
+      const destPath = FileSystem.documentDirectory + "report.pdf";
+
+      await FileSystem.copyAsync({
+        from: uri,
+        to: destPath,
+      });
+
+      console.log("PDF saved at:", destPath);
+
+      Alert.alert("PDF Ready", `Saved at: ${destPath}`);
+      alert(uri);
+
+      // // Step 3: Share the PDF
+      // if (await Sharing.isAvailableAsync()) {
+      //   await Sharing.shareAsync(uri);
+      // } else {
+      //   console.log("Sharing not available on this device");
+      // }
     } catch (error) {
       console.error("Failed to generate PDF:", error);
     }
