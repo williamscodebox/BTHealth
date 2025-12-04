@@ -20,7 +20,6 @@ import { sleep } from ".";
 import { useAppStore } from "@/store/Store";
 import { BPStat } from "@/utils/types/types";
 import Loader from "../../components/Loader";
-import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 
@@ -186,7 +185,7 @@ export default function Profile() {
     <View style={styles.container}>
       <ProfileHeader />
       <LogoutButton />
-      <TouchableOpacity style={styles.addButton} onPress={createPDF}>
+      <TouchableOpacity style={styles.addButton} onPress={createAndSharePDF}>
         <Text style={styles.addButtonText}>Save as PDF</Text>
       </TouchableOpacity>
 
