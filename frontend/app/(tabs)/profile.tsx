@@ -43,7 +43,7 @@ export default function Profile() {
       if (!response.ok)
         throw new Error(data.message || "Failed to fetch user books");
 
-      setBPStats(data.bpStats);
+      setBPStats(data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
       Alert.alert(
