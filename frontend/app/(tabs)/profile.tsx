@@ -109,7 +109,7 @@ export default function Profile() {
   </head>
   <body style="text-align: center;">
     <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
-      Hello Expo!
+      Blood Pressure Readings
     </h1><div class="confirmationBox_content">
         ${bpStats
           .map(
